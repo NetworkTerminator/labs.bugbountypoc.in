@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>XSS DOM Context Lab</title>
+<style>
+body { background-color:#111; color:#fff; font-family:Arial; padding:20px; }
+input, button { padding:8px; margin:5px 0; }
+</style>
+</head>
+<body>
+<h1>XSS Lab - DOM Context</h1>
+<p>Click the button to reflect URL parameter:</p>
+<button id="showName">Show Name</button>
+
+<div id="output" style="margin-top:20px; background:#222; padding:10px;"></div>
+
+<script>
+document.getElementById('showName').addEventListener('click', () => {
+    const name = new URLSearchParams(window.location.search).get('name');
+    if(name){
+        // Vulnerable DOM reflection
+        document.getElementById('output').innerHTML = `<p>Hello ${name}!</p>`;
+    }
+});
+</script>
+</body>
+</html>
