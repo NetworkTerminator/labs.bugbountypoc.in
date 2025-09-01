@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BugBountyPOC Labs Directory</title>
+<style>
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  background: #fff;
+  color: #111;
+}
+nav {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 30px;
+  background: #f8f8f8;
+  border-bottom: 1px solid #ddd;
+}
+nav .logo { font-weight: bold; font-size: 1.3rem; }
+nav ul { list-style: none; display: flex; gap: 12px; margin: 0; padding: 0; }
+nav ul li a { text-decoration: none; color: #111; padding: 6px 12px; border-radius: 4px; transition: 0.2s; }
+nav ul li a:hover { background: #e0e0e0; }
+section { max-width: 900px; margin: 40px auto; padding: 0 20px; }
+.lab-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
+.lab-card { border: 1px solid #eee; border-radius: 8px; padding: 20px; transition: 0.2s; }
+.lab-card:hover { transform: translateY(-5px); box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+.lab-card h3 { margin-top: 0; }
+.lab-card p { margin: 5px 0; }
+.lab-card .tag { background: #ddd; padding: 3px 8px; font-size: 0.75rem; border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">BugBountyPOC</div>
+  <ul>
+    <li><a href="../index.html">Home</a></li>
+    <li><a href="#">Labs</a></li>
+    <li><a href="mailto:youremail@example.com">Contact</a></li>
+    <li><a href="https://www.youtube.com/@networkterminatorsecurity" target="_blank">YouTube</a></li>
+  </ul>
+</nav>
+
+<section>
+  <h2>All Labs</h2>
+  <div class="lab-grid">
+    <div class="lab-card">
+      <h3>XSS - HTML Content Context</h3>
+      <p>Learn to exploit XSS within standard HTML content.</p>
+      <span class="tag">Easy</span>
+      <p><a href="xss-context-reflection/index.html">Open Lab ▶</a></p>
+    </div>
+    <div class="lab-card">
+      <h3>XSS - HTML Attribute Context</h3>
+      <p>Practice breaking out of HTML attributes to execute scripts.</p>
+      <span class="tag">Medium</span>
+      <p><a href="xss-attribute-context/index.html">Open Lab ▶</a></p>
+    </div>
+    <div class="lab-card">
+      <h3>XSS - JavaScript Context</h3>
+      <p>Understand how to inject payloads inside JS code.</p>
+      <span class="tag">Medium</span>
+      <p><a href="xss-js-context/index.html">Open Lab ▶</a></p>
+    </div>
+    <div class="lab-card">
+      <h3>XSS - DOM / URL Context</h3>
+      <p>Explore DOM-based and URL-based XSS scenarios.</p>
+      <span class="tag">Hard</span>
+      <p><a href="xss-dom-context/index.html">Open Lab ▶</a></p>
+    </div>
+    <div class="lab-card">
+      <h3>Stored XSS Lab</h3>
+      <p>Simulate stored XSS using localStorage; persists user input like a real backend.</p>
+      <span class="tag">Medium</span>
+      <p><a href="Stored-XSS/index.html" target="_blank">Open Lab ▶</a></p>
+    </div>
+  </div>
+</section>
+
+</body>
+</html>
