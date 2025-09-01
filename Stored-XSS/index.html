@@ -17,88 +17,21 @@
       padding: 15px;
       text-align: center;
     }
-    header h1 {
-      margin: 0;
-      font-size: 1.6rem;
-    }
-    nav {
-      background: #222;
-      padding: 10px;
-      text-align: center;
-    }
-    nav a {
-      color: #fff;
-      text-decoration: none;
-      margin: 0 10px;
-      font-size: 0.9rem;
-    }
-    nav a:hover {
-      text-decoration: underline;
-    }
-    main {
-      max-width: 900px;
-      margin: 20px auto;
-      padding: 20px;
-      background: #fff;
-      border-radius: 8px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    }
-    h2 {
-      color: #333;
-    }
-    .lab-box {
-      padding: 20px;
-      border: 1px solid #ddd;
-      border-radius: 6px;
-      background: #fafafa;
-      margin-bottom: 20px;
-    }
-    input[type="text"] {
-      width: 70%;
-      padding: 8px;
-    }
-    button {
-      padding: 8px 15px;
-      background: #111;
-      color: #fff;
-      border: none;
-      cursor: pointer;
-    }
-    button:hover {
-      background: #333;
-    }
-    #comments p {
-      background: #f4f4f4;
-      padding: 8px;
-      border-radius: 4px;
-      margin-bottom: 8px;
-    }
-    details {
-      margin: 15px 0;
-      padding: 10px;
-      border: 1px dashed #aaa;
-      border-radius: 5px;
-      background: #fefefe;
-    }
-    footer {
-      margin-top: 40px;
-      text-align: center;
-      padding: 10px;
-      font-size: 0.8rem;
-      color: #666;
-    }
-    code {
-      background: #eee;
-      padding: 2px 4px;
-      border-radius: 4px;
-      font-family: monospace;
-    }
-    pre {
-      background: #eee;
-      padding: 10px;
-      border-radius: 5px;
-      overflow-x: auto;
-    }
+    header h1 { margin: 0; font-size: 1.6rem; }
+    nav { background: #222; padding: 10px; text-align: center; }
+    nav a { color: #fff; text-decoration: none; margin: 0 10px; font-size: 0.9rem; }
+    nav a:hover { text-decoration: underline; }
+    main { max-width: 900px; margin: 20px auto; padding: 20px; background: #fff; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+    h2 { color: #333; }
+    .lab-box { padding: 20px; border: 1px solid #ddd; border-radius: 6px; background: #fafafa; margin-bottom: 20px; }
+    input[type="text"] { width: 70%; padding: 8px; }
+    button { padding: 8px 15px; background: #111; color: #fff; border: none; cursor: pointer; }
+    button:hover { background: #333; }
+    #comments p { background: #f4f4f4; padding: 8px; border-radius: 4px; margin-bottom: 8px; }
+    details { margin: 15px 0; padding: 10px; border: 1px dashed #aaa; border-radius: 5px; background: #fefefe; }
+    footer { margin-top: 40px; text-align: center; padding: 10px; font-size: 0.8rem; color: #666; }
+    code { background: #eee; padding: 2px 4px; border-radius: 4px; font-family: monospace; }
+    pre { background: #eee; padding: 10px; border-radius: 5px; overflow-x: auto; }
   </style>
 </head>
 <body>
@@ -131,17 +64,21 @@
       Try using an <code>&lt;img&gt;</code> tag with an event handler like <code>onerror</code>.
     </details>
 
-    <h2>Answer & Explanation</h2>
-    <p><b>✅ Working Payload:</b></p>
-    <pre><code>&lt;img src=x onerror=alert(1)&gt;</code></pre>
+    <details>
+      <summary>📝 Show Answer & Explanation</summary>
+      <p><b>✅ Working Payload:</b></p>
+      <pre><code>&lt;img src=x onerror=alert(1)&gt;</code></pre>
 
-    <p><b>📖 Explanation:</b></p>
-    <ul>
-      <li><code>&lt;script&gt;alert(1)&lt;/script&gt;</code> often fails because the application might filter or break the script context.</li>
-      <li>In this lab, input is stored and then reflected inside the HTML body without sanitization.</li>
-      <li>By injecting an <code>&lt;img&gt;</code> tag with a broken <code>src</code>, the <code>onerror</code> event executes JavaScript.</li>
-      <li>Thus, <code>&lt;img src=x onerror=alert(1)&gt;</code> reliably triggers an alert pop-up.</li>
-    </ul>
+      <p><b>📖 Deep Explanation:</b></p>
+      <ul>
+        <li>The common payload <code>&lt;script&gt;alert(1)&lt;/script&gt;</code> often fails because applications may filter <code>&lt;script&gt;</code> tags or break the JavaScript context.</li>
+        <li>In this lab, the comment input is stored and then reflected inside the HTML body without proper sanitization, creating a Stored XSS scenario.</li>
+        <li>By using <code>&lt;img src=x onerror=alert(1)&gt;</code>, we exploit an HTML element's event handler. The <code>src</code> is intentionally broken (<code>x</code>) so that the <code>onerror</code> JavaScript executes when the image fails to load.</li>
+        <li>This approach works because it bypasses script filtering and directly injects JavaScript into the event context.</li>
+        <li>When testing XSS, first identify the context where your input is reflected (HTML body, attribute, or JS context). Then choose a payload that fits the context and triggers execution. Here, HTML context is broken by using an <code>&lt;img&gt;</code> tag with an event.</li>
+        <li>Thus, <code>&lt;img src=x onerror=alert(1)&gt;</code> reliably triggers the alert, teaching the concept of context-based XSS payloads.</li>
+      </ul>
+    </details>
   </main>
 
   <footer>
