@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>XSS Attribute Context Lab</title>
+<style>
+body { background-color:#111; color:#fff; font-family:Arial; padding:20px; }
+input, button { padding:8px; margin:5px 0; }
+.output { margin-top:20px; padding:10px; background:#222; border:1px solid #555; }
+</style>
+</head>
+<body>
+<h1>XSS Lab - Attribute Context</h1>
+<p>Enter your favorite color:</p>
+<form method="GET">
+    <input type="text" name="color" placeholder="Color">
+    <button type="submit">Submit</button>
+</form>
+
+<div class="output">
+<strong>Reflected Output:</strong><br>
+<!-- Reflected content goes here -->
+<div id="result"></div>
+</div>
+
+<script>
+const params = new URLSearchParams(window.location.search);
+const color = params.get('color');
+if(color){
+    // Intentionally vulnerable for teaching
+    document.getElementById('result').innerHTML = `<div style="color: ${color}">This text has your color!</div>`;
+}
+</script>
+</body>
+</html>
