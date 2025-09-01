@@ -2,18 +2,55 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Stored XSS Lab</title>
+  <title>Stored XSS Lab - BugBountyPOC</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      margin: 40px auto;
-      max-width: 700px;
-      line-height: 1.6;
+      margin: 0;
+      padding: 0;
+      background: #f9f9f9;
+      color: #111;
+    }
+    header {
+      background: #111;
+      color: #fff;
+      padding: 15px;
+      text-align: center;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 1.6rem;
+    }
+    nav {
+      background: #222;
+      padding: 10px;
+      text-align: center;
+    }
+    nav a {
+      color: #fff;
+      text-decoration: none;
+      margin: 0 10px;
+      font-size: 0.9rem;
+    }
+    nav a:hover {
+      text-decoration: underline;
+    }
+    main {
+      max-width: 900px;
+      margin: 20px auto;
+      padding: 20px;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     }
     h2 {
-      margin-bottom: 10px;
+      color: #333;
     }
-    form {
+    .lab-box {
+      padding: 20px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      background: #fafafa;
       margin-bottom: 20px;
     }
     input[type="text"] {
@@ -36,19 +73,80 @@
       border-radius: 4px;
       margin-bottom: 8px;
     }
+    details {
+      margin: 15px 0;
+      padding: 10px;
+      border: 1px dashed #aaa;
+      border-radius: 5px;
+      background: #fefefe;
+    }
+    footer {
+      margin-top: 40px;
+      text-align: center;
+      padding: 10px;
+      font-size: 0.8rem;
+      color: #666;
+    }
+    code {
+      background: #eee;
+      padding: 2px 4px;
+      border-radius: 4px;
+      font-family: monospace;
+    }
+    pre {
+      background: #eee;
+      padding: 10px;
+      border-radius: 5px;
+      overflow-x: auto;
+    }
   </style>
 </head>
 <body>
-  <h2>💬 Stored XSS Lab</h2>
-  <p>Enter a comment below. The comment will be saved in <b>localStorage</b> to simulate stored XSS.</p>
+  <header>
+    <h1>💬 Stored XSS Lab</h1>
+  </header>
 
-  <form id="commentForm">
-    <input type="text" id="comment" placeholder="Write something..." required />
-    <button type="submit">Submit</button>
-  </form>
+  <nav>
+    <a href="/index.html">🏠 Home</a>
+    <a href="/labs/">🔬 All Labs</a>
+  </nav>
 
-  <h3>Comments:</h3>
-  <div id="comments"></div>
+  <main>
+    <h2>Challenge</h2>
+    <p>Enter a comment below. The comment will be saved in <b>localStorage</b> to simulate <b>Stored XSS</b>. 
+    Try to trigger an <code>alert(1)</code> pop-up.</p>
+
+    <div class="lab-box">
+      <form id="commentForm">
+        <input type="text" id="comment" placeholder="Write something..." required />
+        <button type="submit">Submit</button>
+      </form>
+
+      <h3>Comments:</h3>
+      <div id="comments"></div>
+    </div>
+
+    <details>
+      <summary>💡 Hint</summary>
+      Try using an <code>&lt;img&gt;</code> tag with an event handler like <code>onerror</code>.
+    </details>
+
+    <h2>Answer & Explanation</h2>
+    <p><b>✅ Working Payload:</b></p>
+    <pre><code>&lt;img src=x onerror=alert(1)&gt;</code></pre>
+
+    <p><b>📖 Explanation:</b></p>
+    <ul>
+      <li><code>&lt;script&gt;alert(1)&lt;/script&gt;</code> often fails because the application might filter or break the script context.</li>
+      <li>In this lab, input is stored and then reflected inside the HTML body without sanitization.</li>
+      <li>By injecting an <code>&lt;img&gt;</code> tag with a broken <code>src</code>, the <code>onerror</code> event executes JavaScript.</li>
+      <li>Thus, <code>&lt;img src=x onerror=alert(1)&gt;</code> reliably triggers an alert pop-up.</li>
+    </ul>
+  </main>
+
+  <footer>
+    &copy; 2025 BugBountyPOC Labs | For Educational Purposes Only
+  </footer>
 
   <script>
     // Load stored comments from localStorage
