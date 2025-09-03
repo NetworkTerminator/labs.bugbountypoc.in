@@ -1,52 +1,84 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>⚡ Reflected XSS Lab - JavaScript Context</title>
-<style>
-  body { background:#fff; color:#000; font-family:Arial, sans-serif; padding:20px; }
-  h1 { text-align:center; margin-bottom:20px; }
-  form { text-align:center; margin-bottom:20px; }
-  input, button { padding:8px; margin:5px; border-radius:4px; border:1px solid #ccc; }
-  input { background:#fff; color:#000; }
-  button { background:#000; color:#fff; cursor:pointer; }
-  button:hover { background:#333; }
-  .hint { background:#f0f0f0; padding:10px; border-radius:4px; margin:20px auto; max-width:600px; border:1px solid #ccc; }
-  .topbar { background:#f0f0f0; padding:10px; margin-bottom:20px; border-radius:6px; }
-  .topbar a { margin-right:15px; text-decoration:none; color:#000; font-weight:bold; }
-</style>
+  <meta charset="utf-8" />
+  <title>⚡ Reflected XSS Lab - JavaScript Context</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <style>
+    /* Page base - match Stored/Reflected labs */
+    body { font-family: Arial, sans-serif; margin:0; padding:0; background:#f9f9f9; color:#111; }
+    /* Top UI (black only for header/nav) */
+    header { background:#111; color:#fff; padding:15px; text-align:center; }
+    header h1 { margin:0; font-size:1.6rem; }
+    nav { background:#111; padding:10px; text-align:center; }
+    nav a { color:#fff; text-decoration:none; margin:0 12px; font-size:0.95rem; font-weight:600; }
+    nav a:hover { text-decoration:underline; }
+    /* Main card */
+    main { max-width:900px; margin:20px auto; padding:20px; background:#fff; border-radius:8px; box-shadow:0 2px 5px rgba(0,0,0,0.08); }
+    form { text-align:center; margin-bottom:10px; }
+    input[type="text"] { padding:10px; width:260px; border:1px solid #ccc; border-radius:4px; background:#fff; color:#000; }
+    button { padding:9px 14px; background:#111; color:#fff; border:none; border-radius:4px; cursor:pointer; margin-left:8px; }
+    button:hover { background:#333; }
+    .hint { background:#f0f0f0; padding:12px; border-radius:6px; border:1px solid #ddd; margin-top:16px; }
+    details { margin-top:16px; padding:10px; border:1px dashed #ddd; border-radius:6px; background:#fafafa; }
+    code, pre { background:#eee; padding:2px 6px; border-radius:4px; font-family:monospace; }
+    footer { text-align:center; font-size:0.8rem; color:#666; margin-top:28px; padding-bottom:18px; }
+  </style>
 </head>
 <body>
 
-<div class="topbar">
-  ⚡ Reflected XSS Lab - JavaScript Context <br>
-  <a href="/">🏠 Home</a>
-  <a href="/labs/">🔬 All Labs</a>
-</div>
+  <header>
+    <h1>⚡ Reflected XSS Lab - JavaScript Context</h1>
+  </header>
 
-<h1>XSS Lab - JavaScript Context</h1>
-<p style="text-align:center;">Enter your name below and observe how it is reflected inside JavaScript code.</p>
+  <nav>
+    <a href="https://bugbountypoc.in">🏠 Home</a>
+    <a href="https://labs.bugbountypoc.in">🔬 All Labs</a>
+  </nav>
 
-<form method="GET">
-  <input type="text" name="name" placeholder="Enter name">
-  <button type="submit">Submit</button>
-</form>
+  <main>
+    <h2 style="text-align:center; margin-top:8px;">XSS Lab — JavaScript Context</h2>
+    <p style="text-align:center; margin-bottom:18px;">Enter your name below and observe how it is reflected inside a JavaScript string.</p>
 
-<div class="hint">
-  💡 <b>Hint:</b> Try breaking out of the JavaScript string context with payloads like:  
-  <code>');alert(1);//</code>
-</div>
+    <form method="GET" action="">
+      <input type="text" name="name" placeholder="Enter name" />
+      <button type="submit">Submit</button>
+    </form>
 
-<!-- Vulnerable JS Reflection -->
-<script>
-const params = new URLSearchParams(window.location.search);
-const name = params.get("name");
+    <div class="hint" style="max-width:720px; margin:0 auto;">
+      💡 <strong>Hint:</strong> Try breaking out of the JavaScript string context with payloads such as:
+      <pre style="display:inline-block; margin:0 6px;">');alert(1);//</pre>
+      or
+      <pre style="display:inline-block; margin:0 6px;">");alert(1);//</pre>
+    </div>
 
-if (name) {
-    // Direct injection inside JS context
-    document.write("<script>var user = '" + name + "'; alert('Hello ' + user);<\/script>");
-}
-</script>
+    <details>
+      <summary>📝 Show Answer & Explanation</summary>
+      <p><strong>✅ Working payload (example):</strong></p>
+      <pre>&#39;);alert(1);//</pre>
+      <p><strong>📖 Why it works:</strong></p>
+      <ul>
+        <li>The page takes the `name` parameter from the URL and is injected directly into a JavaScript context inside a script block (no sanitization).</li>
+        <li>If the `name` contains `');alert(1);//` it closes the string, injects `alert(1)`, then comments out the rest — causing immediate execution.</li>
+        <li>If this payload still doesn't run, it may be due to a browser CSP or caching — see troubleshooting steps below.</li>
+      </ul>
+    </details>
+  </main>
 
+  <!-- Vulnerable JS reflection (intentional for training) -->
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const name = params.get('name');
+    if (name) {
+      /* inject a real <script> block containing the user value inside a JS string
+         NOTE: this intentionally does not escape quotes so payloads designed to break
+         out of the JS string will execute (teaching lab). */
+      document.write("<script>var user = '" + name + "'; alert('Hello ' + user);<\/script>");
+    }
+  </script>
+
+  <footer>
+    &copy; 2025 BugBountyPOC Labs | For Educational Purposes Only
+  </footer>
 </body>
 </html>
