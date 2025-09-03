@@ -2,17 +2,15 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>XSS Lab - JavaScript Context</title>
 <style>
-  body { background-color:#fff; color:#000; font-family:Arial, sans-serif; padding:20px; }
+  body { background:#fff; color:#000; font-family:Arial, sans-serif; padding:20px; }
   h1 { text-align:center; margin-bottom:20px; }
   form { text-align:center; margin-bottom:20px; }
   input, button { padding:8px; margin:5px; border-radius:4px; border:1px solid #ccc; }
   input { background:#fff; color:#000; }
-  button { background-color:#000; color:#fff; cursor:pointer; }
-  button:hover { background-color:#333; }
-  #output { background:#f9f9f9; padding:15px; border-radius:6px; max-width:600px; margin:20px auto; border:1px solid #ddd; }
+  button { background:#000; color:#fff; cursor:pointer; }
+  button:hover { background:#333; }
   .hint { background:#f0f0f0; padding:10px; border-radius:4px; margin:20px auto; max-width:600px; border:1px solid #ccc; }
 </style>
 </head>
@@ -21,41 +19,25 @@
 <h1>XSS Lab - JavaScript Context</h1>
 <p style="text-align:center;">Enter your name below and observe how it is reflected inside JavaScript code.</p>
 
-<form id="xssForm">
+<form method="GET">
   <input type="text" name="name" placeholder="Enter name">
   <button type="submit">Submit</button>
 </form>
-
-<div id="output"></div>
 
 <div class="hint">
   💡 <b>Hint:</b> Try breaking out of the JavaScript string context with payloads like:  
   <code>');alert(1);//</code>
 </div>
 
+<!-- Vulnerable JS Reflection -->
 <script>
-const form = document.getElementById('xssForm');
-const output = document.getElementById('output');
+const params = new URLSearchParams(window.location.search);
+const name = params.get("name");
 
-form.addEventListener('submit', (e)=>{
-    e.preventDefault();
-    const name = form.name.value;
-
-    // Show how input is placed inside JavaScript context
-    output.innerHTML = `
-      <pre>
-&lt;script&gt;
-  var user = '${name}';
-  alert("Hello " + user);
-&lt;/script&gt;
-      </pre>
-
-      <script>
-        var user = '${name}';
-        alert("Hello " + user);
-      </script>
-    `;
-});
+if (name) {
+    // vulnerable injection into JS string
+    eval("var user = '" + name + "'; alert('Hello ' + user);");
+}
 </script>
 
 </body>
