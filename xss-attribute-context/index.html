@@ -1,35 +1,80 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>XSS Attribute Context Lab</title>
-<style>
-body { background-color:#111; color:#fff; font-family:Arial; padding:20px; }
-input, button { padding:8px; margin:5px 0; }
-.output { margin-top:20px; padding:10px; background:#222; border:1px solid #555; }
-</style>
+  <meta charset="UTF-8">
+  <title>XSS Lab - Attribute Context</title>
+  <style>
+    body {
+      background-color: #fff; /* White background */
+      color: #000; /* Black text */
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+    input, button {
+      padding: 8px;
+      margin: 5px 0;
+      background-color: #000; /* Black buttons */
+      color: #fff;
+      border: none;
+      cursor: pointer;
+    }
+    .output {
+      margin-top: 20px;
+      padding: 10px;
+      background: #f4f4f4;
+      border: 1px solid #ccc;
+    }
+    details {
+      margin-top: 20px;
+      padding: 10px;
+      background: #e8e8e8;
+      border: 1px solid #bbb;
+    }
+  </style>
 </head>
 <body>
-<h1>XSS Lab - Attribute Context</h1>
-<p>Enter your favorite color:</p>
-<form method="GET">
-    <input type="text" name="color" placeholder="Color">
+  <h1>XSS Lab - Attribute Context</h1>
+  <p>Enter your favorite color and see it reflected below. Try testing your XSS payloads safely!</p>
+
+  <!-- Input form -->
+  <form method="GET">
+    <label for="color">Favorite Color: </label>
+    <input type="text" id="color" name="color" placeholder="Enter color">
     <button type="submit">Submit</button>
-</form>
+  </form>
 
-<div class="output">
-<strong>Reflected Output:</strong><br>
-<!-- Reflected content goes here -->
-<div id="result"></div>
-</div>
+  <div class="output">
+    <strong>Reflected Output:</strong><br>
+    <div id="result"></div>
+  </div>
 
-<script>
-const params = new URLSearchParams(window.location.search);
-const color = params.get('color');
-if(color){
-    // Intentionally vulnerable for teaching
-    document.getElementById('result').innerHTML = `<div style="color: ${color}">This text has your color!</div>`;
-}
-</script>
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const color = params.get('color');
+    if (color) {
+      // WARNING: Intentionally vulnerable to teach XSS
+      document.getElementById('result').innerHTML =
+        `<div style="color: ${color}">This text has your color!</div>`;
+    }
+  </script>
+
+  <!-- Hint -->
+  <p><strong>💡 Hint:</strong> Try breaking out of the attribute and injecting an event handler.</p>
+
+  <!-- Answer & Explanation -->
+  <details>
+    <summary>📝 Show Answer & Explanation</summary>
+    <p><b>✅ Working Payload:</b></p>
+    <pre><code>" onmouseover="alert(1)</code></pre>
+
+    <p><b>📖 Deep Explanation:</b></p>
+    <ul>
+      <li>The input is reflected inside an HTML attribute: <code>style="color: ..."</code>.</li>
+      <li>A normal string like <code>red</code> just changes the text color.</li>
+      <li>By injecting <code>" onmouseover="alert(1)</code>, we break out of the <code>style</code> attribute and start a new one (<code>onmouseover</code>).</li>
+      <li>Now, hovering over the text will execute <code>alert(1)</code>.</li>
+      <li><b>Lesson:</b> In attribute context, think about how to escape quotes and inject new attributes.</li>
+    </ul>
+  </details>
 </body>
 </html>
