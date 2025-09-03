@@ -5,15 +5,15 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>XSS Lab - JavaScript Context</title>
 <style>
-  body { background-color:#111; color:#fff; font-family:Arial, sans-serif; padding:20px; }
+  body { background-color:#fff; color:#000; font-family:Arial, sans-serif; padding:20px; }
   h1 { text-align:center; margin-bottom:20px; }
   form { text-align:center; margin-bottom:20px; }
-  input, button { padding:8px; margin:5px; border-radius:4px; border:none; }
+  input, button { padding:8px; margin:5px; border-radius:4px; border:1px solid #ccc; }
   input { background:#fff; color:#000; }
-  button { background-color:#111; color:#fff; cursor:pointer; }
+  button { background-color:#000; color:#fff; cursor:pointer; }
   button:hover { background-color:#333; }
-  #output { background:#222; padding:15px; border-radius:6px; max-width:600px; margin:20px auto; }
-  .hint { background:#333; padding:10px; border-radius:4px; margin-top:20px; }
+  #output { background:#f9f9f9; padding:15px; border-radius:6px; max-width:600px; margin:20px auto; border:1px solid #ddd; }
+  .hint { background:#f0f0f0; padding:10px; border-radius:4px; margin:20px auto; max-width:600px; border:1px solid #ccc; }
 </style>
 </head>
 <body>
@@ -41,10 +41,7 @@ form.addEventListener('submit', (e)=>{
     e.preventDefault();
     const name = form.name.value;
 
-    // Clear previous output
-    output.innerHTML = '';
-
-    // Vulnerable JS context reflection
+    // Show how input is placed inside JavaScript context
     output.innerHTML = `
       <pre>
 &lt;script&gt;
