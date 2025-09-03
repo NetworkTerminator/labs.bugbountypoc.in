@@ -2,25 +2,28 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>⚡JavaScript Context</title>
+  <title>⚡ XSS Lab - JavaScript Context</title>
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <style>
-    /* Page base - match Stored/Reflected labs */
+    /* Top UI header (black bar only for header/nav) */
     body { font-family: Arial, sans-serif; margin:0; padding:0; background:#f9f9f9; color:#111; }
-    /* Top UI (black only for header/nav) */
     header { background:#111; color:#fff; padding:15px; text-align:center; }
-    header h1 { margin:0; font-size:1.6rem; }
+    header h1 { margin:0; font-size:1.4rem; }
     nav { background:#111; padding:10px; text-align:center; }
     nav a { color:#fff; text-decoration:none; margin:0 12px; font-size:0.95rem; font-weight:600; }
     nav a:hover { text-decoration:underline; }
+
     /* Main card */
     main { max-width:900px; margin:20px auto; padding:20px; background:#fff; border-radius:8px; box-shadow:0 2px 5px rgba(0,0,0,0.08); }
-    form { text-align:center; margin-bottom:10px; }
-    input[type="text"] { padding:10px; width:260px; border:1px solid #ccc; border-radius:4px; background:#fff; color:#000; }
+    h2 { margin-top:0; color:#333; text-align:left; }
+    form { text-align:left; margin-top:10px; }
+    label { display:inline-block; width:120px; }
+    input[type="text"] { padding:10px; width:300px; border:1px solid #ccc; border-radius:4px; background:#fff; color:#000; }
     button { padding:9px 14px; background:#111; color:#fff; border:none; border-radius:4px; cursor:pointer; margin-left:8px; }
     button:hover { background:#333; }
-    .hint { background:#f0f0f0; padding:12px; border-radius:6px; border:1px solid #ddd; margin-top:16px; }
-    details { margin-top:16px; padding:10px; border:1px dashed #ddd; border-radius:6px; background:#fafafa; }
+
+    details { margin-top:16px; padding:12px; border:1px dashed #ddd; border-radius:6px; background:#fafafa; }
+    .hint { background:#f0f0f0; padding:12px; border-radius:6px; border:1px solid #ddd; margin-top:16px; max-width:720px; }
     code, pre { background:#eee; padding:2px 6px; border-radius:4px; font-family:monospace; }
     footer { text-align:center; font-size:0.8rem; color:#666; margin-top:28px; padding-bottom:18px; }
   </style>
@@ -28,7 +31,7 @@
 <body>
 
   <header>
-    <h1>⚡ Reflected XSS Lab - JavaScript Context</h1>
+    <h1>⚡ XSS Lab - JavaScript Context</h1>
   </header>
 
   <nav>
@@ -37,43 +40,44 @@
   </nav>
 
   <main>
-    <h2 style="text-align:center; margin-top:8px;">XSS Lab — JavaScript Context</h2>
-    <p style="text-align:center; margin-bottom:18px;">Enter your name below and observe how it is reflected inside a JavaScript string.</p>
+    <h2>Challenge</h2>
+    <p>Your input will be placed directly into a JavaScript string. Try to break out of the string and execute JavaScript.</p>
 
     <form method="GET" action="">
-      <input type="text" name="name" placeholder="Enter name" />
+      <label for="name">Your Name:</label>
+      <input type="text" id="name" name="name" placeholder="Enter name" />
       <button type="submit">Submit</button>
     </form>
 
-    <div class="hint" style="max-width:720px; margin:0 auto;">
-      💡 <strong>Hint:</strong> Try breaking out of the JavaScript string context with payloads such as:
-      <pre style="display:inline-block; margin:0 6px;">');alert(1);//</pre>
-      or
-      <pre style="display:inline-block; margin:0 6px;">");alert(1);//</pre>
+    <div class="hint">
+      💡 <strong>Hint:</strong> Try breaking out of the string and injecting code.
     </div>
 
     <details>
       <summary>📝 Show Answer & Explanation</summary>
-      <p><strong>✅ Working payload (example):</strong></p>
-      <pre>&#39;);alert(1);//</pre>
-      <p><strong>📖 Why it works:</strong></p>
+
+      <p><strong>✅ Working Payload:</strong></p>
+      <pre><code>");alert(1);//</code></pre>
+
+      <p><strong>📖 Explanation:</strong></p>
       <ul>
-        <li>The page takes the `name` parameter from the URL and is injected directly into a JavaScript context inside a script block (no sanitization).</li>
-        <li>If the `name` contains `');alert(1);//` it closes the string, injects `alert(1)`, then comments out the rest — causing immediate execution.</li>
-        <li>If this payload still doesn't run, it may be due to a browser CSP or caching — see troubleshooting steps below.</li>
+        <li>The input is reflected inside a JavaScript string, for example:<br>
+          <code>var msg = "Hello USER_INPUT";</code></li>
+        <li>By using <code>");</code>, we close the string and terminate the statement.</li>
+        <li>We then inject <code>alert(1);</code> as new code.</li>
+        <li>The <code>//</code> at the end comments out the remaining JavaScript to avoid syntax errors.</li>
+        <li>This results in execution of <code>alert(1)</code>.</li>
       </ul>
     </details>
   </main>
 
-  <!-- Vulnerable JS reflection (intentional for training) -->
+  <!-- Vulnerable reflection -->
   <script>
     const params = new URLSearchParams(window.location.search);
     const name = params.get('name');
     if (name) {
-      /* inject a real <script> block containing the user value inside a JS string
-         NOTE: this intentionally does not escape quotes so payloads designed to break
-         out of the JS string will execute (teaching lab). */
-      document.write("<script>var user = '" + name + "'; alert('Hello ' + user);<\/script>");
+      // Intentionally vulnerable reflection into JS string
+      eval(`var msg = "Hello ${name}"; alert(msg);`);
     }
   </script>
 
