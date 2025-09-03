@@ -86,21 +86,18 @@
 
     <details>
       <summary>💡 Hint</summary>
-      Try injecting a payload that breaks out of the &lt;p&gt; tag, for example:  
-      <pre><code>?name=</code>&lt;/p&gt;&lt;img src=x onerror=alert(1)&gt;</pre>
-      or  
-      <pre><code>?name=</code>&lt;/p&gt;&lt;script&gt;alert(1)&lt;/script&gt;</pre>
+      Try injecting a <code>&lt;script&gt;alert(1)&lt;/script&gt;</code> by adding it as the <code>name</code> parameter in the URL.
     </details>
 
     <details>
       <summary>📝 Show Answer & Explanation</summary>
       <p><b>✅ Working Payload:</b></p>
-      <pre><code>&lt;/p&gt;&lt;img src=x onerror=alert(1)&gt;</code></pre>
+      <pre><code>&lt;/p&gt;&lt;script&gt;alert(1)&lt;/script&gt;</code></pre>
 
       <p><b>📖 Deep Explanation:</b></p>
       <ul>
         <li>The app uses <code>innerHTML</code> to insert user input directly into the DOM.</li>
-        <li>Because the input is wrapped in a &lt;p&gt; tag, you need to break out of it: <code>&lt;/p&gt;&lt;img src=x onerror=alert(1)&gt;</code>.</li>
+        <li>Because the input is wrapped in a &lt;p&gt; tag, you need to break out of it: <code>&lt;/p&gt;&lt;script&gt;alert(1)&lt;/script&gt;</code>.</li>
         <li>This is a <b>DOM-based XSS vulnerability</b> because reflection happens entirely in client-side JavaScript.</li>
         <li>Fix: never use <code>innerHTML</code> with untrusted input. Use <code>textContent</code> or safe templating.</li>
       </ul>
