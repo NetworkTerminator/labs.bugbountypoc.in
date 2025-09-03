@@ -3,21 +3,23 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>XSS JS Context Lab</title>
+<title>XSS Lab - JavaScript Context</title>
 <style>
   body { background-color:#111; color:#fff; font-family:Arial, sans-serif; padding:20px; }
   h1 { text-align:center; margin-bottom:20px; }
   form { text-align:center; margin-bottom:20px; }
   input, button { padding:8px; margin:5px; border-radius:4px; border:none; }
+  input { background:#fff; color:#000; }
   button { background-color:#111; color:#fff; cursor:pointer; }
   button:hover { background-color:#333; }
   #output { background:#222; padding:15px; border-radius:6px; max-width:600px; margin:20px auto; }
+  .hint { background:#333; padding:10px; border-radius:4px; margin-top:20px; }
 </style>
 </head>
 <body>
 
 <h1>XSS Lab - JavaScript Context</h1>
-<p style="text-align:center;">Type your name below to see how JavaScript can reflect input. Try safe payloads like <code>');alert(1);//</code></p>
+<p style="text-align:center;">Enter your name below and observe how it is reflected inside JavaScript code.</p>
 
 <form id="xssForm">
   <input type="text" name="name" placeholder="Enter name">
@@ -25,6 +27,11 @@
 </form>
 
 <div id="output"></div>
+
+<div class="hint">
+  💡 <b>Hint:</b> Try breaking out of the JavaScript string context with payloads like:  
+  <code>');alert(1);//</code>
+</div>
 
 <script>
 const form = document.getElementById('xssForm');
@@ -34,22 +41,23 @@ form.addEventListener('submit', (e)=>{
     e.preventDefault();
     const name = form.name.value;
 
-    // Simulate JS context reflection safely
-    // Instead of eval(), we create a script element dynamically
-    output.innerHTML = ''; // clear previous
-    const p = document.createElement('p');
-    p.textContent = `Hello ${name}! (Simulated JS context)`;
-    output.appendChild(p);
+    // Clear previous output
+    output.innerHTML = '';
 
-    // Optional: demonstrate real JS execution in controlled way
-    // Create a script element dynamically (for teaching purposes)
-    try {
-        const script = document.createElement('script');
-        script.innerHTML = `console.log('Simulated execution with: ${name}');`;
-        output.appendChild(script);
-    } catch(err) {
-        console.error('Script injection blocked by browser', err);
-    }
+    // Vulnerable JS context reflection
+    output.innerHTML = `
+      <pre>
+&lt;script&gt;
+  var user = '${name}';
+  alert("Hello " + user);
+&lt;/script&gt;
+      </pre>
+
+      <script>
+        var user = '${name}';
+        alert("Hello " + user);
+      </script>
+    `;
 });
 </script>
 
