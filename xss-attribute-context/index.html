@@ -2,86 +2,121 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>XSS Lab - Attribute Context</title>
+  <title>💬 XSS Lab - Attribute Context</title>
   <style>
     body {
-      background-color: #fff; /* White background */
-      color: #000; /* Black text */
       font-family: Arial, sans-serif;
-      padding: 20px;
+      margin: 0;
+      padding: 0;
+      background: #f9f9f9;
+      color: #111;
     }
-    input {
-      padding: 8px;
-      margin: 5px 0;
-      background-color: #fff; /* White input box */
-      color: #000; /* Black text inside input */
-      border: 1px solid #ccc;
-    }
-    button {
-      padding: 8px;
-      margin: 5px 0;
-      background-color: #000; /* Black button */
+    header {
+      background: #111;
       color: #fff;
-      border: none;
-      cursor: pointer;
+      padding: 15px;
+      text-align: center;
     }
+    header h1 { margin: 0; font-size: 1.6rem; }
+    nav { background: #222; padding: 10px; text-align: center; }
+    nav a { color: #fff; text-decoration: none; margin: 0 10px; font-size: 0.9rem; }
+    nav a:hover { text-decoration: underline; }
+    main {
+      max-width: 900px;
+      margin: 20px auto;
+      padding: 20px;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    h2 { color: #333; }
+    .lab-box {
+      padding: 20px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      background: #fafafa;
+      margin-bottom: 20px;
+    }
+    input[type="text"] { width: 70%; padding: 8px; }
+    button { padding: 8px 15px; background: #111; color: #fff; border: none; cursor: pointer; }
+    button:hover { background: #333; }
     details {
-      margin-top: 20px;
+      margin: 15px 0;
       padding: 10px;
-      background: #e8e8e8;
-      border: 1px solid #bbb;
+      border: 1px dashed #aaa;
+      border-radius: 5px;
+      background: #fefefe;
     }
+    footer {
+      margin-top: 40px;
+      text-align: center;
+      padding: 10px;
+      font-size: 0.8rem;
+      color: #666;
+    }
+    code { background: #eee; padding: 2px 4px; border-radius: 4px; font-family: monospace; }
+    pre { background: #eee; padding: 10px; border-radius: 5px; overflow-x: auto; }
   </style>
 </head>
 <body>
-  <h1>💬 XSS Lab - Attribute Context</h1>
+  <header>
+    <h1>💬 XSS Lab - Attribute Context</h1>
+  </header>
 
-  <h2>Challenge</h2>
-  <p>Enter your name below. The value will be reflected inside an HTML attribute.  
-  Try to trigger an <code>alert(1)</code> pop-up!</p>
+  <nav>
+    <a href="https://bugbountypoc.in">🏠 Home</a>
+    <a href="https://labs.bugbountypoc.in/">🔬 All Labs</a>
+  </nav>
 
-  <!-- Input form -->
-  <form method="GET">
-    <label for="name">Your Name: </label>
-    <input type="text" id="name" name="name" placeholder="Enter name">
-    <button type="submit">Submit</button>
-  </form>
+  <main>
+    <h2>Challenge</h2>
+    <p>Enter your name below. Your input will be placed inside an HTML attribute. Try to trigger an <code>alert(1)</code> pop-up.</p>
+
+    <div class="lab-box">
+      <form method="GET">
+        <input type="text" id="name" name="name" placeholder="Enter your name" required />
+        <button type="submit">Submit</button>
+      </form>
+    </div>
+
+    <details>
+      <summary>💡 Hint</summary>
+      Try breaking out of the attribute with a quote and using an event handler like <code>" autofocus onfocus=alert(1) x="</code>
+    </details>
+
+    <details>
+      <summary>📝 Show Answer & Explanation</summary>
+      <p><b>✅ Working Payload:</b></p>
+      <pre><code>" autofocus onfocus=alert(1) x="</code></pre>
+
+      <p><b>📖 Deep Explanation:</b></p>
+      <ul>
+        <li>This lab puts your input inside an <b>HTML attribute</b>, for example:  
+        <pre><code>&lt;div style="color: USER_INPUT"&gt;This text has your color!&lt;/div&gt;</code></pre></li>
+        <li>The payload <code>" autofocus onfocus=alert(1) x="</code> works by:</li>
+        <ul>
+          <li><code>"</code> closes the current attribute value.</li>
+          <li><code>autofocus</code> forces the element to be focused automatically.</li>
+          <li><code>onfocus=alert(1)</code> runs JavaScript when the element gains focus.</li>
+          <li><code>x="</code> is just filler to keep the HTML valid.</li>
+        </ul>
+        <li>When the page loads, the input auto-focuses and triggers <code>alert(1)</code>.</li>
+        <li>This demonstrates how XSS works in an <b>attribute context</b>, where escaping quotes and injecting event handlers is key.</li>
+      </ul>
+    </details>
+  </main>
+
+  <footer>
+    &copy; 2025 BugBountyPOC Labs | For Educational Purposes Only
+  </footer>
 
   <script>
     const params = new URLSearchParams(window.location.search);
     const name = params.get('name');
     if (name) {
-      // WARNING: Intentionally vulnerable for teaching
+      // Intentionally vulnerable attribute context
       document.write(`<input type="text" value="${name}">`);
     }
   </script>
-
-  <!-- Hint -->
-  <details>
-    <summary>💡 Hint</summary>
-    Try breaking out of the <code>value="..."</code> attribute by using a quote (<code>"</code>) and injecting a new event handler.
-  </details>
-
-  <!-- Answer & Explanation -->
-  <details>
-    <summary>📝 Show Answer & Explanation</summary>
-    <p><b>✅ Working Payload:</b></p>
-    <pre><code>" onfocus=alert(1) autofocus="</code></pre>
-
-    <p><b>📖 Deep Explanation:</b></p>
-    <ul>
-      <li>The input is reflected inside an HTML attribute: <code>value="...user input..."</code>.</li>
-      <li>Normal text like <code>John</code> is harmless: <code>value="John"</code>.</li>
-      <li>Our payload starts with <code>"</code> → closes the <code>value</code> attribute.</li>
-      <li>Then we add <code>onfocus=alert(1)</code> → new event handler.</li>
-      <li><code>autofocus</code> makes the input automatically focused on page load, so <code>onfocus</code> executes instantly.</li>
-      <li>The final <code>=</code> keeps the markup valid and prevents errors.</li>
-      <li><b>Lesson:</b> In Attribute Context, breaking out of quotes allows you to inject new attributes that trigger JavaScript.</li>
-    </ul>
-  </details>
-
-  <footer>
-    &copy; 2025 BugBountyPOC Labs | For Educational Purposes Only
-  </footer>
 </body>
 </html>
