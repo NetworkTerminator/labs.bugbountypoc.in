@@ -77,7 +77,7 @@
 
   <main>
     <h2>Challenge</h2>
-    <p>Click the button to reflect the <code>name</code> parameter from the URL into the page. Try to trigger an <code>alert(1)</code> pop-up.</p>
+    <p>👉 Add <code>?name=yourinput</code> to the URL, then click <b>Show Name</b> to reflect it on the page. Try to trigger an <code>alert(1)</code> pop-up.</p>
 
     <div class="lab-box">
       <button id="showName">Show Name</button>
@@ -86,22 +86,23 @@
 
     <details>
       <summary>💡 Hint</summary>
-      Try injecting a <code>&lt;script&gt;</code> tag like:  
-      <pre><code>?name=&lt;script&gt;alert(1)&lt;/script&gt;</code></pre>
+      Try injecting a payload that breaks out of the &lt;p&gt; tag, for example:  
+      <pre><code>?name=</code>&lt;/p&gt;&lt;img src=x onerror=alert(1)&gt;</pre>
+      or  
+      <pre><code>?name=</code>&lt;/p&gt;&lt;script&gt;alert(1)&lt;/script&gt;</pre>
     </details>
 
     <details>
       <summary>📝 Show Answer & Explanation</summary>
       <p><b>✅ Working Payload:</b></p>
-      <pre><code>&lt;script&gt;alert(1)&lt;/script&gt;</code></pre>
+      <pre><code>&lt;/p&gt;&lt;img src=x onerror=alert(1)&gt;</code></pre>
 
       <p><b>📖 Deep Explanation:</b></p>
       <ul>
-        <li>The app uses <code>innerHTML</code> to insert user input directly into the DOM:</li>
-        <pre><code>document.getElementById('output').innerHTML = `&lt;p&gt;Hello ${name}!&lt;/p&gt;`;</code></pre>
-        <li>When your input is <code>&lt;script&gt;alert(1)&lt;/script&gt;</code>, the browser executes it as JavaScript.</li>
-        <li>This is called a <b>DOM-based XSS</b> vulnerability because the dangerous reflection happens entirely on the client-side JavaScript, without involving the server.</li>
-        <li>Fix: never use <code>innerHTML</code> with untrusted input. Use <code>textContent</code> or safe templating instead.</li>
+        <li>The app uses <code>innerHTML</code> to insert user input directly into the DOM.</li>
+        <li>Because the input is wrapped in a &lt;p&gt; tag, you need to break out of it: <code>&lt;/p&gt;&lt;img src=x onerror=alert(1)&gt;</code>.</li>
+        <li>This is a <b>DOM-based XSS vulnerability</b> because reflection happens entirely in client-side JavaScript.</li>
+        <li>Fix: never use <code>innerHTML</code> with untrusted input. Use <code>textContent</code> or safe templating.</li>
       </ul>
     </details>
   </main>
