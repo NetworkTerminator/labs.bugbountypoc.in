@@ -1,98 +1,103 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Reflected XSS Lab - HTML Context</title>
-    <style>
-        body {
-            background-color: #111; /* Dark theme for cybersecurity feel */
-            color: #fff;
-            font-family: Arial, sans-serif;
-            padding: 20px;
-        }
-        input, button {
-            padding: 8px;
-            margin: 5px 0;
-        }
-        .output {
-            margin-top: 20px;
-            padding: 10px;
-            background-color: #222;
-            border: 1px solid #555;
-        }
-        details {
-            margin: 15px 0;
-            padding: 10px;
-            border: 1px dashed #888;
-            border-radius: 5px;
-            background: #1a1a1a;
-        }
-        code {
-            background: #333;
-            padding: 2px 4px;
-            border-radius: 4px;
-            font-family: monospace;
-            color: #0f0;
-        }
-        pre {
-            background: #333;
-            padding: 10px;
-            border-radius: 5px;
-            overflow-x: auto;
-            color: #0f0;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <title>Reflected XSS Lab - HTML Context</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f9f9f9;
+      color: #111;
+    }
+    header {
+      background: #111;
+      color: #fff;
+      padding: 15px;
+      text-align: center;
+    }
+    header h1 { margin: 0; font-size: 1.6rem; }
+    nav { background: #222; padding: 10px; text-align: center; }
+    nav a { color: #fff; text-decoration: none; margin: 0 10px; font-size: 0.9rem; }
+    nav a:hover { text-decoration: underline; }
+    main { max-width: 900px; margin: 20px auto; padding: 20px; background: #fff; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+    h2 { color: #333; }
+    .lab-box { padding: 20px; border: 1px solid #ddd; border-radius: 6px; background: #fafafa; margin-bottom: 20px; }
+    input[type="text"] { width: 70%; padding: 8px; }
+    button { padding: 8px 15px; background: #111; color: #fff; border: none; cursor: pointer; }
+    button:hover { background: #333; }
+    .output { margin-top: 20px; padding: 10px; background-color: #f4f4f4; border: 1px solid #ddd; border-radius: 6px; }
+    details { margin: 15px 0; padding: 10px; border: 1px dashed #aaa; border-radius: 5px; background: #fefefe; }
+    code { background: #eee; padding: 2px 4px; border-radius: 4px; font-family: monospace; }
+    pre { background: #eee; padding: 10px; border-radius: 5px; overflow-x: auto; }
+    footer { margin-top: 40px; text-align: center; padding: 10px; font-size: 0.8rem; color: #666; }
+  </style>
 </head>
 <body>
+  <header>
     <h1>⚡ Reflected XSS Lab - HTML Context</h1>
+  </header>
+
+  <nav>
+    <a href="https://bugbountypoc.in">🏠 Home</a>
+    <a href="https://labs.bugbountypoc.in">🔬 All Labs</a>
+  </nav>
+
+  <main>
+    <h2>Challenge</h2>
     <p>Enter your name below and see how it reflects on the page. Try to trigger an <code>alert(1)</code> pop-up!</p>
 
     <!-- Input form -->
-    <form method="GET">
+    <div class="lab-box">
+      <form method="GET">
         <label for="name">Your Name: </label>
         <input type="text" id="name" name="name" placeholder="Enter name">
         <button type="submit">Submit</button>
-    </form>
+      </form>
 
-    <div class="output">
+      <div class="output">
         <strong>Reflected Output:</strong><br>
-        <!-- Reflected content goes here -->
-        <div id="result">
-            <!-- JavaScript will insert input here -->
-        </div>
+        <div id="result"></div>
+      </div>
     </div>
 
     <!-- Hint Section -->
     <details>
       <summary>💡 Hint</summary>
-      Try injecting a <code>&lt;script&gt;</code> tag since your input is reflected inside the HTML body without sanitization.
+      Your input is directly reflected into the HTML page. If <code>&lt;script&gt;</code> doesn’t work, try using an element with an event handler like <code>onerror</code>.
     </details>
 
     <!-- Answer + Explanation -->
     <details>
       <summary>📝 Show Answer & Explanation</summary>
       <p><b>✅ Working Payload:</b></p>
-      <pre><code>&lt;script&gt;alert(1)&lt;/script&gt;</code></pre>
+      <pre><code>&lt;img src=x onerror=alert(1)&gt;</code></pre>
 
       <p><b>📖 Deep Explanation:</b></p>
       <ul>
-        <li>The application takes user input (<code>name</code>) from the URL and directly inserts it into the page using <code>innerHTML</code> without sanitization.</li>
-        <li>Since the input is reflected inside the normal <b>HTML body context</b>, the classic <code>&lt;script&gt;</code> injection works perfectly.</li>
-        <li>When the page renders, the browser executes the malicious JavaScript inside <code>&lt;script&gt;</code> tags.</li>
-        <li>In real-world apps, <code>&lt;script&gt;</code> may be filtered, which is why alternative payloads like <code>&lt;img src=x onerror=...&gt;</code> are often used.</li>
-        <li>Key lesson: Always analyze the <b>injection context</b>. Here it was raw HTML, so <code>&lt;script&gt;</code> execution was the simplest and most effective.</li>
+        <li>The application reflects the <code>name</code> parameter into the page using <code>innerHTML</code> without sanitization.</li>
+        <li>Direct <code>&lt;script&gt;</code> injection fails because it’s embedded inside surrounding text (<code>Hello ...!</code>).</li>
+        <li>Instead, we inject a new HTML element (<code>&lt;img&gt;</code>) with a broken source.</li>
+        <li>The browser tries to load the image, fails, and triggers the <code>onerror</code> event → executing our JavaScript (<code>alert(1)</code>).</li>
+        <li><b>Lesson:</b> If <code>&lt;script&gt;</code> doesn’t execute, try alternate payloads like event handlers, attributes, or other elements based on the injection context.</li>
       </ul>
     </details>
+  </main>
 
-    <script>
-        // Get URL parameters
-        const urlParams = new URLSearchParams(window.location.search);
-        const name = urlParams.get('name');
+  <footer>
+    &copy; 2025 BugBountyPOC Labs | For Educational Purposes Only
+  </footer>
 
-        if (name) {
-            // WARNING: Intentionally vulnerable for training purposes
-            document.getElementById('result').innerHTML = `Hello, ${name}!`;
-        }
-    </script>
+  <script>
+    // Get URL parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    const name = urlParams.get('name');
+
+    if (name) {
+      // WARNING: Intentionally vulnerable for training purposes
+      document.getElementById('result').innerHTML = `Hello, ${name}!`;
+    }
+  </script>
 </body>
 </html>
