@@ -1,28 +1,123 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>XSS DOM Context Lab</title>
-<style>
-body { background-color:#111; color:#fff; font-family:Arial; padding:20px; }
-input, button { padding:8px; margin:5px 0; }
-</style>
+  <meta charset="UTF-8">
+  <title>💬 XSS Lab - DOM Context</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f9f9f9;
+      color: #111;
+    }
+    header {
+      background: #111;
+      color: #fff;
+      padding: 15px;
+      text-align: center;
+    }
+    header h1 { margin: 0; font-size: 1.6rem; }
+    nav { background: #222; padding: 10px; text-align: center; }
+    nav a { color: #fff; text-decoration: none; margin: 0 10px; font-size: 0.9rem; }
+    nav a:hover { text-decoration: underline; }
+    main {
+      max-width: 900px;
+      margin: 20px auto;
+      padding: 20px;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    h2 { color: #333; }
+    .lab-box {
+      padding: 20px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      background: #fafafa;
+      margin-bottom: 20px;
+    }
+    input[type="text"] { width: 70%; padding: 8px; }
+    button { padding: 8px 15px; background: #111; color: #fff; border: none; cursor: pointer; }
+    button:hover { background: #333; }
+    #output {
+      margin-top: 20px;
+      background: #f4f4f4;
+      padding: 15px;
+      border-radius: 6px;
+      border: 1px solid #ddd;
+    }
+    details {
+      margin: 15px 0;
+      padding: 10px;
+      border: 1px dashed #aaa;
+      border-radius: 5px;
+      background: #fefefe;
+    }
+    footer {
+      margin-top: 40px;
+      text-align: center;
+      padding: 10px;
+      font-size: 0.8rem;
+      color: #666;
+    }
+    code { background: #eee; padding: 2px 4px; border-radius: 4px; font-family: monospace; }
+    pre { background: #eee; padding: 10px; border-radius: 5px; overflow-x: auto; }
+  </style>
 </head>
 <body>
-<h1>XSS Lab - DOM Context</h1>
-<p>Click the button to reflect URL parameter:</p>
-<button id="showName">Show Name</button>
+  <header>
+    <h1>💬 XSS Lab - DOM Context</h1>
+  </header>
 
-<div id="output" style="margin-top:20px; background:#222; padding:10px;"></div>
+  <nav>
+    <a href="https://bugbountypoc.in">🏠 Home</a>
+    <a href="https://labs.bugbountypoc.in/">🔬 All Labs</a>
+  </nav>
 
-<script>
-document.getElementById('showName').addEventListener('click', () => {
-    const name = new URLSearchParams(window.location.search).get('name');
-    if(name){
-        // Vulnerable DOM reflection
+  <main>
+    <h2>Challenge</h2>
+    <p>Click the button to reflect the <code>name</code> parameter from the URL into the page. Try to trigger an <code>alert(1)</code> pop-up.</p>
+
+    <div class="lab-box">
+      <button id="showName">Show Name</button>
+      <div id="output"></div>
+    </div>
+
+    <details>
+      <summary>💡 Hint</summary>
+      Try injecting a <code>&lt;script&gt;</code> tag like:  
+      <pre><code>?name=&lt;script&gt;alert(1)&lt;/script&gt;</code></pre>
+    </details>
+
+    <details>
+      <summary>📝 Show Answer & Explanation</summary>
+      <p><b>✅ Working Payload:</b></p>
+      <pre><code>&lt;script&gt;alert(1)&lt;/script&gt;</code></pre>
+
+      <p><b>📖 Deep Explanation:</b></p>
+      <ul>
+        <li>The app uses <code>innerHTML</code> to insert user input directly into the DOM:</li>
+        <pre><code>document.getElementById('output').innerHTML = `&lt;p&gt;Hello ${name}!&lt;/p&gt;`;</code></pre>
+        <li>When your input is <code>&lt;script&gt;alert(1)&lt;/script&gt;</code>, the browser executes it as JavaScript.</li>
+        <li>This is called a <b>DOM-based XSS</b> vulnerability because the dangerous reflection happens entirely on the client-side JavaScript, without involving the server.</li>
+        <li>Fix: never use <code>innerHTML</code> with untrusted input. Use <code>textContent</code> or safe templating instead.</li>
+      </ul>
+    </details>
+  </main>
+
+  <footer>
+    &copy; 2025 BugBountyPOC Labs | For Educational Purposes Only
+  </footer>
+
+  <script>
+    document.getElementById('showName').addEventListener('click', () => {
+      const name = new URLSearchParams(window.location.search).get('name');
+      if (name) {
+        // Intentionally vulnerable DOM reflection
         document.getElementById('output').innerHTML = `<p>Hello ${name}!</p>`;
-    }
-});
-</script>
+      }
+    });
+  </script>
 </body>
 </html>
