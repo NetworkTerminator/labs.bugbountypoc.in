@@ -25,12 +25,6 @@
       border: none;
       cursor: pointer;
     }
-    .output {
-      margin-top: 20px;
-      padding: 10px;
-      background: #f4f4f4;
-      border: 1px solid #ccc;
-    }
     details {
       margin-top: 20px;
       padding: 10px;
@@ -43,8 +37,8 @@
   <h1>💬 XSS Lab - Attribute Context</h1>
 
   <h2>Challenge</h2>
-  <p>Enter your name below. It will be reflected inside an HTML attribute.  
-  Try to trigger an <code>alert(1)</code> pop-up by breaking out of the attribute!</p>
+  <p>Enter your name below. The value will be reflected inside an HTML attribute.  
+  Try to trigger an <code>alert(1)</code> pop-up!</p>
 
   <!-- Input form -->
   <form method="GET">
@@ -53,41 +47,36 @@
     <button type="submit">Submit</button>
   </form>
 
-  <div class="output">
-    <strong>Reflected Output:</strong><br>
-    <div id="result"></div>
-  </div>
-
   <script>
     const params = new URLSearchParams(window.location.search);
     const name = params.get('name');
     if (name) {
       // WARNING: Intentionally vulnerable for teaching
-      document.getElementById('result').innerHTML =
-        `<input type="text" value="${name}">`;
+      document.write(`<input type="text" value="${name}">`);
     }
   </script>
 
   <!-- Hint -->
   <details>
     <summary>💡 Hint</summary>
-    Think about how to break out of the <code>value="..."</code> attribute and inject a new one with JavaScript.
+    Try breaking out of the <code>value="..."</code> attribute by using a quote (<code>"</code>) and injecting a new event handler.
   </details>
 
   <!-- Answer & Explanation -->
   <details>
     <summary>📝 Show Answer & Explanation</summary>
     <p><b>✅ Working Payload:</b></p>
-    <pre><code>" autofocus onfocus=alert(1)</code></pre>
+    <pre><code>" onfocus=alert(1) autofocus="</code></pre>
 
     <p><b>📖 Deep Explanation:</b></p>
     <ul>
       <li>The input is reflected inside an HTML attribute: <code>value="...user input..."</code>.</li>
-      <li>If you enter just <code>John</code>, it becomes <code>value="John"</code> → safe.</li>
-      <li>By entering <code>" autofocus onfocus=alert(1)</code>, we close the <code>value</code> attribute with <code>"</code> and inject two new attributes.</li>
-      <li><code>autofocus</code> ensures the field is focused when the page loads.</li>
-      <li><code>onfocus=alert(1)</code> runs immediately when the page focuses the field, triggering the popup without user interaction.</li>
-      <li><b>Lesson:</b> In attribute context, escaping quotes lets you inject new attributes that execute JavaScript.</li>
+      <li>Normal text like <code>John</code> is harmless: <code>value="John"</code>.</li>
+      <li>Our payload starts with <code>"</code> → closes the <code>value</code> attribute.</li>
+      <li>Then we add <code>onfocus=alert(1)</code> → new event handler.</li>
+      <li><code>autofocus</code> makes the input automatically focused on page load, so <code>onfocus</code> executes instantly.</li>
+      <li>The final <code>=</code> keeps the markup valid and prevents errors.</li>
+      <li><b>Lesson:</b> In Attribute Context, breaking out of quotes allows you to inject new attributes that trigger JavaScript.</li>
     </ul>
   </details>
 
