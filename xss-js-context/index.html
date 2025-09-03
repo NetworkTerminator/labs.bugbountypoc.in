@@ -1,88 +1,125 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
+  <meta charset="UTF-8">
   <title>⚡ XSS Lab - JavaScript Context</title>
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <style>
-    /* Top UI header (black bar only for header/nav) */
-    body { font-family: Arial, sans-serif; margin:0; padding:0; background:#f9f9f9; color:#111; }
-    header { background:#111; color:#fff; padding:15px; text-align:center; }
-    header h1 { margin:0; font-size:1.4rem; }
-    nav { background:#111; padding:10px; text-align:center; }
-    nav a { color:#fff; text-decoration:none; margin:0 12px; font-size:0.95rem; font-weight:600; }
-    nav a:hover { text-decoration:underline; }
-
-    /* Main card */
-    main { max-width:900px; margin:20px auto; padding:20px; background:#fff; border-radius:8px; box-shadow:0 2px 5px rgba(0,0,0,0.08); }
-    h2 { margin-top:0; color:#333; text-align:left; }
-    form { text-align:left; margin-top:10px; }
-    label { display:inline-block; width:120px; }
-    input[type="text"] { padding:10px; width:300px; border:1px solid #ccc; border-radius:4px; background:#fff; color:#000; }
-    button { padding:9px 14px; background:#111; color:#fff; border:none; border-radius:4px; cursor:pointer; margin-left:8px; }
-    button:hover { background:#333; }
-
-    details { margin-top:16px; padding:12px; border:1px dashed #ddd; border-radius:6px; background:#fafafa; }
-    .hint { background:#f0f0f0; padding:12px; border-radius:6px; border:1px solid #ddd; margin-top:16px; max-width:720px; }
-    code, pre { background:#eee; padding:2px 6px; border-radius:4px; font-family:monospace; }
-    footer { text-align:center; font-size:0.8rem; color:#666; margin-top:28px; padding-bottom:18px; }
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f9f9f9;
+      color: #111;
+    }
+    header {
+      background: #111;
+      color: #fff;
+      padding: 15px;
+      text-align: center;
+    }
+    header h1 { margin: 0; font-size: 1.6rem; }
+    nav { background: #222; padding: 10px; text-align: center; }
+    nav a { color: #fff; text-decoration: none; margin: 0 10px; font-size: 0.9rem; }
+    nav a:hover { text-decoration: underline; }
+    main {
+      max-width: 900px;
+      margin: 20px auto;
+      padding: 20px;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    h2 { color: #333; }
+    .lab-box {
+      padding: 20px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      background: #fafafa;
+      margin-bottom: 20px;
+    }
+    input[type="text"] { width: 70%; padding: 8px; }
+    button { padding: 8px 15px; background: #111; color: #fff; border: none; cursor: pointer; }
+    button:hover { background: #333; }
+    details {
+      margin: 15px 0;
+      padding: 10px;
+      border: 1px dashed #aaa;
+      border-radius: 5px;
+      background: #fefefe;
+    }
+    footer {
+      margin-top: 40px;
+      text-align: center;
+      padding: 10px;
+      font-size: 0.8rem;
+      color: #666;
+    }
+    code { background: #eee; padding: 2px 4px; border-radius: 4px; font-family: monospace; }
+    pre { background: #eee; padding: 10px; border-radius: 5px; overflow-x: auto; }
   </style>
 </head>
 <body>
-
   <header>
     <h1>⚡ XSS Lab - JavaScript Context</h1>
   </header>
 
   <nav>
     <a href="https://bugbountypoc.in">🏠 Home</a>
-    <a href="https://labs.bugbountypoc.in">🔬 All Labs</a>
+    <a href="https://labs.bugbountypoc.in/">🔬 All Labs</a>
   </nav>
 
   <main>
     <h2>Challenge</h2>
-    <p>Your input will be placed directly into a JavaScript string. Try to break out of the string and execute JavaScript.</p>
+    <p>Enter your name below. Your input will be placed inside a JavaScript string. Try to trigger an <code>alert(1)</code> pop-up.</p>
 
-    <form method="GET" action="">
-      <label for="name">Your Name:</label>
-      <input type="text" id="name" name="name" placeholder="Enter name" />
-      <button type="submit">Submit</button>
-    </form>
-
-    <div class="hint">
-      💡 <strong>Hint:</strong> Try breaking out of the string and injecting code.
+    <div class="lab-box">
+      <form method="GET">
+        <input type="text" id="name" name="name" placeholder="Enter your name" required />
+        <button type="submit">Submit</button>
+      </form>
     </div>
 
     <details>
+      <summary>💡 Hint</summary>
+      Try breaking out of the string with something like <code>');alert(1);//</code>
+    </details>
+
+    <details>
       <summary>📝 Show Answer & Explanation</summary>
+      <p><b>✅ Working Payload:</b></p>
+      <pre><code>');alert(1);//</code></pre>
 
-      <p><strong>✅ Working Payload:</strong></p>
-      <pre><code>");alert(1);//</code></pre>
-
-      <p><strong>📖 Explanation:</strong></p>
+      <p><b>📖 Deep Explanation:</b></p>
       <ul>
-        <li>The input is reflected inside a JavaScript string, for example:<br>
-          <code>var msg = "Hello USER_INPUT";</code></li>
-        <li>By using <code>");</code>, we close the string and terminate the statement.</li>
-        <li>We then inject <code>alert(1);</code> as new code.</li>
-        <li>The <code>//</code> at the end comments out the remaining JavaScript to avoid syntax errors.</li>
-        <li>This results in execution of <code>alert(1)</code>.</li>
+        <li>The lab places your input inside a JavaScript string context like:  
+        <pre><code>console.log('Simulated execution with: USER_INPUT');</code></pre></li>
+        <li>The payload <code>');alert(1);//</code> works by:</li>
+        <ul>
+          <li><code>'</code> closes the string.</li>
+          <li><code>;</code> ends the current statement.</li>
+          <li><code>alert(1);</code> executes your injected JavaScript.</li>
+          <li><code>//</code> comments out the rest to avoid syntax errors.</li>
+        </ul>
+        <li>This demonstrates how XSS works inside a <b>JavaScript context</b>, where you must escape the string safely to inject code.</li>
       </ul>
     </details>
   </main>
 
-  <!-- Vulnerable reflection -->
-  <script>
-    const params = new URLSearchParams(window.location.search);
-    const name = params.get('name');
-    if (name) {
-      // Intentionally vulnerable reflection into JS string
-      eval(`var msg = "Hello ${name}"; alert(msg);`);
-    }
-  </script>
-
   <footer>
     &copy; 2025 BugBountyPOC Labs | For Educational Purposes Only
   </footer>
+
+  <script>
+    // Load URL parameter
+    const urlParams = new URLSearchParams(window.location.search);
+    const name = urlParams.get('name');
+
+    if (name) {
+      // Intentionally vulnerable JS context
+      const script = document.createElement('script');
+      script.innerHTML = `console.log('Simulated execution with: ${name}');`;
+      document.body.appendChild(script);
+    }
+  </script>
 </body>
 </html>
