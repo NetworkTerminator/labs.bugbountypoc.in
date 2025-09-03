@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>XSS Lab - JavaScript Context</title>
+<title>⚡ Reflected XSS Lab - JavaScript Context</title>
 <style>
   body { background:#fff; color:#000; font-family:Arial, sans-serif; padding:20px; }
   h1 { text-align:center; margin-bottom:20px; }
@@ -12,9 +12,17 @@
   button { background:#000; color:#fff; cursor:pointer; }
   button:hover { background:#333; }
   .hint { background:#f0f0f0; padding:10px; border-radius:4px; margin:20px auto; max-width:600px; border:1px solid #ccc; }
+  .topbar { background:#f0f0f0; padding:10px; margin-bottom:20px; border-radius:6px; }
+  .topbar a { margin-right:15px; text-decoration:none; color:#000; font-weight:bold; }
 </style>
 </head>
 <body>
+
+<div class="topbar">
+  ⚡ Reflected XSS Lab - JavaScript Context <br>
+  <a href="/">🏠 Home</a>
+  <a href="/labs/">🔬 All Labs</a>
+</div>
 
 <h1>XSS Lab - JavaScript Context</h1>
 <p style="text-align:center;">Enter your name below and observe how it is reflected inside JavaScript code.</p>
@@ -35,8 +43,8 @@ const params = new URLSearchParams(window.location.search);
 const name = params.get("name");
 
 if (name) {
-    // vulnerable injection into JS string
-    eval("var user = '" + name + "'; alert('Hello ' + user);");
+    // Direct injection inside JS context
+    document.write("<script>var user = '" + name + "'; alert('Hello ' + user);<\/script>");
 }
 </script>
 
