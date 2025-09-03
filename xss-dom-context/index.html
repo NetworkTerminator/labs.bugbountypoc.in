@@ -86,7 +86,7 @@
 
     <details>
       <summary>💡 Hint</summary>
-      Try injecting a <code>&lt;script&gt;alert(1)&lt;/script&gt;</code> by adding it as the <code>name</code> parameter in the URL.
+      Try injecting a <code>&lt;script&gt;alert(1)&lt;/script&gt;</code> in the <code>name</code> parameter. You don’t need the full URL here—just focus on how to break the DOM context.
     </details>
 
     <details>
@@ -98,10 +98,9 @@
       <ul>
         <li>The app reads the <code>name</code> parameter from the URL using JavaScript:</li>
         <pre><code>const name = new URLSearchParams(window.location.search).get('name');</code></pre>
-        <li>It then inserts the value into the page using <code>innerHTML</code>:</li>
+        <li>It inserts the value into the page using <code>innerHTML</code>:</li>
         <pre><code>document.getElementById('output').innerHTML = `&lt;p&gt;Hello ${name}!&lt;/p&gt;`;</code></pre>
-        <li>Since the input is wrapped in a &lt;p&gt; tag, normal <code>&lt;script&gt;alert(1)&lt;/script&gt;</code> won't execute unless you break out of it using:</li>
-        <pre><code>&lt;/p&gt;&lt;script&gt;alert(1)&lt;/script&gt;</code></pre>
+        <li>Since the input is wrapped in a &lt;p&gt; tag, normal script tags won't execute unless you break out of it using: <code>&lt;/p&gt;&lt;script&gt;alert(1)&lt;/script&gt;</code>.</li>
         <li>This is a <b>DOM-based XSS</b> vulnerability because the reflection and execution happen entirely in client-side JavaScript.</li>
         <li>Fix: Never use <code>innerHTML</code> with untrusted input. Use <code>textContent</code> or safe templating.</li>
       </ul>
