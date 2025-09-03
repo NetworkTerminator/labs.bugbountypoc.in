@@ -91,15 +91,19 @@
 
     <details>
       <summary>📝 Show Answer & Explanation</summary>
-      <p><b>✅ Working Payload:</b></p>
-      <pre><code>&lt;/p&gt;&lt;script&gt;alert(1)&lt;/script&gt;</code></pre>
+      <p><b>✅ Full URL with Working Payload:</b></p>
+      <pre><code>https://labs.bugbountypoc.in/xss-dom-context/?name=</code>&lt;/p&gt;&lt;script&gt;alert(1)&lt;/script&gt;</pre>
 
       <p><b>📖 Deep Explanation:</b></p>
       <ul>
-        <li>The app uses <code>innerHTML</code> to insert user input directly into the DOM.</li>
-        <li>Because the input is wrapped in a &lt;p&gt; tag, you need to break out of it: <code>&lt;/p&gt;&lt;script&gt;alert(1)&lt;/script&gt;</code>.</li>
-        <li>This is a <b>DOM-based XSS vulnerability</b> because reflection happens entirely in client-side JavaScript.</li>
-        <li>Fix: never use <code>innerHTML</code> with untrusted input. Use <code>textContent</code> or safe templating.</li>
+        <li>The app reads the <code>name</code> parameter from the URL using JavaScript:</li>
+        <pre><code>const name = new URLSearchParams(window.location.search).get('name');</code></pre>
+        <li>It then inserts the value into the page using <code>innerHTML</code>:</li>
+        <pre><code>document.getElementById('output').innerHTML = `&lt;p&gt;Hello ${name}!&lt;/p&gt;`;</code></pre>
+        <li>Since the input is wrapped in a &lt;p&gt; tag, normal <code>&lt;script&gt;alert(1)&lt;/script&gt;</code> won't execute unless you break out of it using:</li>
+        <pre><code>&lt;/p&gt;&lt;script&gt;alert(1)&lt;/script&gt;</code></pre>
+        <li>This is a <b>DOM-based XSS</b> vulnerability because the reflection and execution happen entirely in client-side JavaScript.</li>
+        <li>Fix: Never use <code>innerHTML</code> with untrusted input. Use <code>textContent</code> or safe templating.</li>
       </ul>
     </details>
   </main>
