@@ -58,7 +58,9 @@
 
       <div class="output">
         <strong>Reflected Output:</strong><br>
-        <div id="result"></div>
+        <!-- Reflection directly in HTML -->
+        Hello, 
+        <?php if (isset($_GET['name'])) { echo $_GET['name']; } ?>!
       </div>
     </div>
 
@@ -76,11 +78,11 @@
 
       <p><b>📖 Deep Explanation:</b></p>
       <ul>
-        <li>The application reflects the <code>name</code> parameter into the page using <code>innerHTML</code> without sanitization.</li>
-        <li>Direct <code>&lt;script&gt;</code> injection fails because it’s embedded inside surrounding text (<code>Hello ...!</code>).</li>
-        <li>Instead, we inject a new HTML element (<code>&lt;img&gt;</code>) with a broken source.</li>
-        <li>The browser tries to load the image, fails, and triggers the <code>onerror</code> event → executing our JavaScript (<code>alert(1)</code>).</li>
-        <li><b>Lesson:</b> If <code>&lt;script&gt;</code> doesn’t execute, try alternate payloads like event handlers, attributes, or other elements based on the injection context.</li>
+        <li>The application reflects the <code>name</code> parameter into the raw HTML without sanitization.</li>
+        <li>You can see this directly in the Burp Repeater response source.</li>
+        <li><code>&lt;script&gt;</code> may not always work depending on where your input is injected in the HTML.</li>
+        <li>But injecting an element like <code>&lt;img&gt;</code> with an <code>onerror</code> event triggers JavaScript successfully.</li>
+        <li><b>Lesson:</b> Always check the <b>context</b> where your input lands in the HTML. The payload depends on that context.</li>
       </ul>
     </details>
   </main>
@@ -88,16 +90,5 @@
   <footer>
     &copy; 2025 BugBountyPOC Labs | For Educational Purposes Only
   </footer>
-
-  <script>
-    // Get URL parameters
-    const urlParams = new URLSearchParams(window.location.search);
-    const name = urlParams.get('name');
-
-    if (name) {
-      // WARNING: Intentionally vulnerable for training purposes
-      document.getElementById('result').innerHTML = `Hello, ${name}!`;
-    }
-  </script>
 </body>
 </html>
