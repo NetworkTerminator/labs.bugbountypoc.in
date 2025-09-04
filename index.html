@@ -22,6 +22,14 @@ nav .logo { font-weight: bold; font-size: 1.3rem; }
 nav ul { list-style: none; display: flex; gap: 12px; margin: 0; padding: 0; }
 nav ul li a { text-decoration: none; color: #111; padding: 6px 12px; border-radius: 4px; transition: 0.2s; }
 nav ul li a:hover { background: #e0e0e0; }
+.warning-banner {
+  background: #ffdddd;
+  color: #a10000;
+  text-align: center;
+  padding: 12px;
+  font-weight: bold;
+  border-bottom: 2px solid #a10000;
+}
 section { max-width: 900px; margin: 40px auto; padding: 0 20px; }
 .lab-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
 .lab-card { border: 1px solid #eee; border-radius: 8px; padding: 20px; transition: 0.2s; }
@@ -42,6 +50,11 @@ section { max-width: 900px; margin: 40px auto; padding: 0 20px; }
     <li><a href="https://www.youtube.com/@networkterminatorsecurity" target="_blank">YouTube</a></li>
   </ul>
 </nav>
+
+<div class="warning-banner">
+  ⚠️ This is an intentionally vulnerable lab for educational purposes only.  
+  Do not enter personal or sensitive data.
+</div>
 
 <section>
   <h2>All Labs</h2>
