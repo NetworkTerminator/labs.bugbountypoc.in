@@ -46,7 +46,7 @@
 
   <main>
     <h2>Challenge</h2>
-    <p>Enter a comment below. The comment will be saved in <b>localStorage</b> to simulate <b>Stored XSS</b>. 
+    <p>Enter a comment below. The comment will <b>appear for this session only</b> (disappears on refresh) to simulate <b>Stored XSS</b>. 
     Try to trigger an <code>alert(1)</code> pop-up.</p>
 
     <div class="lab-box">
@@ -72,11 +72,10 @@
       <p><b>📖 Deep Explanation:</b></p>
       <ul>
         <li>The common payload <code>&lt;script&gt;alert(1)&lt;/script&gt;</code> often fails because applications may filter <code>&lt;script&gt;</code> tags or break the JavaScript context.</li>
-        <li>In this lab, the comment input is stored and then reflected inside the HTML body without proper sanitization, creating a Stored XSS scenario.</li>
+        <li>In this lab, the comment input is reflected inside the HTML body without proper sanitization, simulating a Stored XSS scenario.</li>
         <li>By using <code>&lt;img src=x onerror=alert(1)&gt;</code>, we exploit an HTML element's event handler. The <code>src</code> is intentionally broken (<code>x</code>) so that the <code>onerror</code> JavaScript executes when the image fails to load.</li>
         <li>This approach works because it bypasses script filtering and directly injects JavaScript into the event context.</li>
         <li>When testing XSS, first identify the context where your input is reflected (HTML body, attribute, or JS context). Then choose a payload that fits the context and triggers execution. Here, HTML context is broken by using an <code>&lt;img&gt;</code> tag with an event.</li>
-        <li>Thus, <code>&lt;img src=x onerror=alert(1)&gt;</code> reliably triggers the alert, teaching the concept of context-based XSS payloads.</li>
       </ul>
     </details>
   </main>
@@ -86,21 +85,19 @@
   </footer>
 
   <script>
-    // Load stored comments from localStorage
-    if (localStorage.getItem("comments")) {
-      document.getElementById("comments").innerHTML = localStorage.getItem("comments");
-    }
-
-    // Save new comments
+    // Stateless version: comments vanish on refresh
     document.getElementById("commentForm").onsubmit = function(e) {
       e.preventDefault();
       let comment = document.getElementById("comment").value;
+
+      // Directly append without saving anywhere (XSS vulnerable)
       let current = document.getElementById("comments").innerHTML;
       let updated = current + "<p>" + comment + "</p>";
       document.getElementById("comments").innerHTML = updated;
-      localStorage.setItem("comments", updated);
+
       document.getElementById("comment").value = "";
     }
   </script>
 </body>
 </html>
+
