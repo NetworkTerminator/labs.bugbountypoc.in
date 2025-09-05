@@ -4,34 +4,23 @@
   <meta charset="UTF-8">
   <title>⚡ Reflected XSS Lab - HTML Context</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-      background: #f9f9f9;
-      color: #111;
-    }
-    header {
-      background: #111;
-      color: #fff;
-      padding: 15px;
-      text-align: center;
-    }
-    header h1 { margin: 0; font-size: 1.6rem; }
-    nav { background: #222; padding: 10px; text-align: center; }
-    nav a { color: #fff; text-decoration: none; margin: 0 10px; font-size: 0.9rem; }
-    nav a:hover { text-decoration: underline; }
-    main { max-width: 900px; margin: 20px auto; padding: 20px; background: #fff; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-    h2 { color: #333; }
-    .lab-box { padding: 20px; border: 1px solid #ddd; border-radius: 6px; background: #fafafa; margin-bottom: 20px; }
-    input[type="text"] { width: 70%; padding: 8px; }
-    button { padding: 8px 15px; background: #111; color: #fff; border: none; cursor: pointer; }
-    button:hover { background: #333; }
-    .output { margin-top: 20px; padding: 10px; background-color: #f4f4f4; border: 1px solid #ddd; border-radius: 6px; }
-    details { margin: 15px 0; padding: 10px; border: 1px dashed #aaa; border-radius: 5px; background: #fefefe; }
-    code { background: #eee; padding: 2px 4px; border-radius: 4px; font-family: monospace; }
-    pre { background: #eee; padding: 10px; border-radius: 5px; overflow-x: auto; }
-    footer { margin-top: 40px; text-align: center; padding: 10px; font-size: 0.8rem; color: #666; }
+    body { font-family: Arial; margin:0; padding:0; background:#f9f9f9; color:#111; }
+    header { background:#111; color:#fff; padding:15px; text-align:center; }
+    header h1 { margin:0; font-size:1.6rem; }
+    nav { background:#222; padding:10px; text-align:center; }
+    nav a { color:#fff; text-decoration:none; margin:0 10px; font-size:0.9rem; }
+    nav a:hover { text-decoration:underline; }
+    main { max-width:900px; margin:20px auto; padding:20px; background:#fff; border-radius:8px; box-shadow:0 2px 5px rgba(0,0,0,0.1); }
+    h2 { color:#333; }
+    .lab-box { padding:20px; border:1px solid #ddd; border-radius:6px; background:#fafafa; margin-bottom:20px; }
+    input[type="text"] { width:70%; padding:8px; }
+    button { padding:8px 15px; background:#111; color:#fff; border:none; cursor:pointer; }
+    button:hover { background:#333; }
+    .output { margin-top:20px; padding:10px; background:#f4f4f4; border:1px solid #ddd; border-radius:6px; }
+    details { margin:15px 0; padding:10px; border:1px dashed #aaa; border-radius:5px; background:#fefefe; }
+    code { background:#eee; padding:2px 4px; border-radius:4px; font-family:monospace; }
+    pre { background:#eee; padding:10px; border-radius:5px; overflow-x:auto; }
+    footer { margin-top:40px; text-align:center; padding:10px; font-size:0.8rem; color:#666; }
   </style>
 </head>
 <body>
@@ -50,7 +39,7 @@
 
     <!-- Input form -->
     <div class="lab-box">
-      <form method="GET">
+      <form id="xssForm">
         <label for="name">Your Name: </label>
         <input type="text" id="name" name="name" placeholder="Enter name">
         <button type="submit">Submit</button>
@@ -77,11 +66,8 @@
       <p><b>📖 Deep Explanation:</b></p>
       <ul>
         <li>The application reflects the <code>name</code> parameter directly into the page without sanitization.</li>
-        <li>In this lab, reflection happens via JavaScript in the browser (since it’s static hosting).</li>
-        <li>In real-world apps (PHP/Node/Python), the reflection happens in the raw server response.</li>
-        <li><code>&lt;script&gt;</code> may not always work depending on where your input is injected.</li>
-        <li>But injecting an element like <code>&lt;img&gt;</code> with an <code>onerror</code> event triggers JavaScript successfully.</li>
-        <li><b>Lesson:</b> Always check the <b>context</b> where your input lands in the HTML. The payload depends on that context.</li>
+        <li>Reflection happens via JavaScript in the browser.</li>
+        <li>Use <code>&lt;img&gt;</code> with <code>onerror</code> to trigger JS.</li>
       </ul>
     </details>
   </main>
@@ -90,14 +76,29 @@
     &copy; 2025 BugBountyPOC Labs | For Educational Purposes Only
   </footer>
 
-  <!-- Fake backend reflection using JS -->
+  <!-- JS to handle reflection dynamically -->
   <script>
     const urlParams = new URLSearchParams(window.location.search);
-    const name = urlParams.get('name');
-    if (name) {
-      // Intentionally unsafe for XSS demonstration
-      document.getElementById('result').innerHTML = name;
+    const resultEl = document.getElementById('result');
+    const nameInput = document.getElementById('name');
+
+    // Function to reflect value safely for the lab
+    function reflectName(value) {
+      resultEl.innerHTML = value; // unsafe on purpose for XSS demo
+      nameInput.value = value; // prefill input field
     }
+
+    // Reflect on page load if URL has ?name=
+    const nameFromURL = urlParams.get('name');
+    if (nameFromURL) reflectName(nameFromURL);
+
+    // Reflect on form submit without reload
+    document.getElementById('xssForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const nameValue = nameInput.value;
+      reflectName(nameValue);
+      history.replaceState(null, '', '?name=' + encodeURIComponent(nameValue)); // update URL
+    });
   </script>
 </body>
 </html>
