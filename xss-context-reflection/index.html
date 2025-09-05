@@ -74,28 +74,33 @@ Your input is directly reflected into the HTML page. If <code>&lt;script&gt;</co
 </footer>
 
 <script>
-// Get elements
+// Elements
 const resultEl = document.getElementById('result');
 const nameInput = document.getElementById('name');
 
-// Function to reflect input
+// Function to reflect value
 function reflectName(value) {
-    resultEl.innerHTML = value; // unsafe on purpose
+    resultEl.innerHTML = value; // unsafe intentionally
     nameInput.value = value;     // prefill input
 }
 
-// Check URL for ?name= on page load
-const urlParams = new URLSearchParams(window.location.search);
-const nameFromURL = urlParams.get('name');
-if(nameFromURL) reflectName(nameFromURL);
+// Reflect from URL on load
+function reflectFromURL() {
+    const params = new URLSearchParams(window.location.search);
+    const nameParam = params.get('name');
+    if(nameParam) reflectName(nameParam);
+}
 
-// Handle form submit dynamically (no reload)
+// Reflect when form is submitted
 document.getElementById('xssForm').addEventListener('submit', function(e){
     e.preventDefault();
-    const nameValue = nameInput.value;
-    reflectName(nameValue);
-    history.replaceState(null, '', '?name=' + encodeURIComponent(nameValue)); // update URL
+    const val = nameInput.value;
+    reflectName(val);
+    history.replaceState(null, '', '?name=' + encodeURIComponent(val)); // update URL
 });
+
+// Initial reflection on page load
+window.addEventListener('load', reflectFromURL);
 </script>
 </body>
 </html>
